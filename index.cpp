@@ -7,6 +7,33 @@
 #include <iostream>
 #include <fstream>
 
+struct realpath_error {
+    const char *filename;
+    int err;
+};
+
+class safe_realpath {
+    public:
+        safe_realpath(const char *filename)
+            : realpath_(realpath(filename, NULL))
+        {
+            if (!realpath_)
+                throw realpath_error{filename, errno};
+        }
+
+        operator const char *() const
+        {
+            return realpath_;
+        }
+
+        ~safe_realpath()
+        {
+            free((void *)realpath_);
+        }
+
+    const char *realpath_;
+};
+
 void usage(const char *progname)
 {
     std::cout
@@ -105,10 +132,12 @@ void list_attributes(int argc, char **argv)
     idx::index idx(build_full_db_name());
 
     for (int i = 0; i < argc; i++) {
-        auto attributes = idx.list_attributes(argv[i]);
+        auto path = safe_realpath{argv[i]};
+
+        auto attributes = idx.list_attributes((const char *)path);
 
         for (auto attr: attributes)
-            std::cout << argv[i] << ": " << attr.key << ", " << attr.value << '\n';
+            std::cout << path << ": " << attr.key << ", " << attr.value << '\n';
     }
 }
 
@@ -117,21 +146,23 @@ void set_attributes(const char *filename, int argc, char **argv)
     if (argc % 2 != 0)
         return;
 
+    auto path = safe_realpath(filename);
     std::vector<idx::attribute> values;
 
     for (int i = 0; i < argc; i += 2)
         values.push_back({argv[i], argv[i + 1]});
 
     idx::index idx(build_full_db_name());
-    idx.insert(filename, values);
+    idx.insert((const char *)path, values);
 }
 
 void del_attributes(const char *filename, int argc, char **argv)
 {
     idx::index idx(build_full_db_name());
+    auto path = safe_realpath(filename);
 
     for (int i = 0; i < argc; i++)
-        idx.remove_attribute(filename, argv[i]);
+        idx.remove_attribute((const char *)path, argv[i]);
 }
 
 void list_files(const char *db_name)
@@ -234,6 +265,11 @@ int main(int argc, char **argv)
     } catch (const SQLite::Exception& e) {
         std::cerr << "error: " << e.getErrorStr() << '\n';
         return e.getErrorCode();
+    } catch (const realpath_error& e) {
+        std::cerr
+            << "error: failed to get realpath of '"
+            << e.filename << "': " << strerror(e.err) << '\n';
+        return e.err;
     }
 
     return 0;
