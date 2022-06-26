@@ -50,14 +50,14 @@ void usage(const char *progname)
         << "                list the attributes of <f1>, <f2>, ...\n"
         << "    del-attr:   <f1> <k1> <k2> ...\n"
         << "                delete the attributes <k1>, <k2>, ... from <file>\n"
-        << "    list-files: <dataset>\n"
-        << "                list the files contained in <dataset>\n"
-        << "    list-db:\n"
-        << "                list available databases\n"
-        << "    create:     <dataset>\n"
-        << "                create a new dataset named <dataset>\n"
-        << "    select:     <dataset>\n"
-        << "                set the current dataset to <dataset>\n";
+        << "    list-files: <index>\n"
+        << "                list the files contained in <index>\n"
+        << "    list-index:\n"
+        << "                list available indexes\n"
+        << "    create:     <index>\n"
+        << "                create a new index named <index>\n"
+        << "    select:     <index>\n"
+        << "                set the current index to <index>\n";
 }
 
 // TODO add unit tests for this
@@ -91,7 +91,7 @@ void select_db(const char *db_name)
 {
     std::fstream f;
 
-    f.open(get_conf_dir() + "current_db", std::ios::out);
+    f.open(get_conf_dir() + "current_index", std::ios::out);
 
     f << db_name;
 }
@@ -101,26 +101,34 @@ std::string read_db_name()
     std::fstream f;
     std::string s;
 
-    f.open(get_conf_dir() + "current_db");
+    f.open(get_conf_dir() + "current_index");
 
     if (!f.is_open()) {
-        std::cerr << "error: no current database setup, use 'index select <dbname>'\n";
-        exit(1);
+        std::cerr << "warn: no current database setup, use 'index select <dbname>'\n";
+        return "";
     }
 
     // FIXME safe check s
     f >> s;
     if (s.empty()) {
-        std::cerr << "error: no current database setup, use 'index select <dbname>'\n";
-        exit(1);
+        std::cerr << "warn: no current database setup, use 'index select <dbname>'\n";
+        return "";
     }
     return s;
 }
 
 std::string build_full_db_name(std::string db_name = "")
 {
-    if (db_name.empty())
+    if (db_name.empty()) {
         db_name = read_db_name();
+        if (db_name.empty()){
+            std::cerr
+                << "error: no index provided and no current index setup, "
+                   "use 'index setup <index>'\n";
+            exit(1);
+        }
+
+    }
     std::string full_name{get_data_dir()};
 
     full_name += db_name;
@@ -195,14 +203,14 @@ void create_db(const char *filename)
     idx::create_db(path);
 }
 
-void list_db()
+void list_index()
 {
     auto dir = get_data_dir();
     DIR *d = opendir(dir.c_str());
     struct dirent *dirent;
 
     if (d) {
-        auto current_db = read_db_name() + ".db";
+        std::string current_index = read_db_name() + ".db";
 
         while ((dirent = readdir(d)) != NULL) {
             std::string file{dirent->d_name};
@@ -213,7 +221,7 @@ void list_db()
             // FIXME safe check file type and content
             if (file.ends_with(".db"))
                 std::cout << file.substr(0, file.size() - 3)
-                    << (file == current_db ? " (X)" : "")
+                    << (file == current_index ? " (X)" : "")
                     << '\n';
         }
         closedir(d);
@@ -251,8 +259,8 @@ int main(int argc, char **argv)
                 if (argc >= 3)
                     select_db(argv[2]);
                 break;
-            case idx::cmd::list_db:
-                list_db();
+            case idx::cmd::list_index:
+                list_index();
                 break;
             case idx::cmd::help:
                 usage(argv[0]);

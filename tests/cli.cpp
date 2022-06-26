@@ -15,7 +15,7 @@ auto const suite = ct::Suite{"Index", [] {
         ct::expect(idx::parse_cmd("create") == idx::cmd::create_db);
         ct::expect(idx::parse_cmd("select") == idx::cmd::select_db);
         ct::expect(idx::parse_cmd("list-files") == idx::cmd::list_files);
-        ct::expect(idx::parse_cmd("list-db") == idx::cmd::list_db);
+        ct::expect(idx::parse_cmd("list-index") == idx::cmd::list_index);
         ct::expect(idx::parse_cmd("-h") == idx::cmd::help);
         ct::expect(idx::parse_cmd("--help") == idx::cmd::help);
         ct::expect(idx::parse_cmd("invalid") == idx::cmd::unknown);

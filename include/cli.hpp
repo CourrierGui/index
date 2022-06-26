@@ -13,7 +13,7 @@ namespace idx {
         create_db,
         select_db,
         help,
-        list_db,
+        list_index,
     };
 
     cmd parse_cmd(const char *name);

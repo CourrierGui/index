@@ -26,11 +26,11 @@ function test_cleanup()
 trap test_cleanup EXIT
 
 index create "$db_name"
-index list-db | grep "$db_name" ||
+index list-index | grep "$db_name" ||
     error "Failed to create '$db_name'"
 
 index select "$db_name"
-index list-db | grep "$db_name (X)" ||
+index list-index | grep "$db_name (X)" ||
     error "Failed to create '$db_name'"
 
 index get-attr unknown-file &&

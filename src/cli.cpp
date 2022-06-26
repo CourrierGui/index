@@ -27,13 +27,13 @@ namespace idx {
                     return cmd::unknown;
 
                 switch (name[5]) {
-                    case 'd':
-                        if (!std::strcmp(&name[6], "b"))
-                            return cmd::list_db;
-                        break;
                     case 'f':
                         if (!std::strcmp(&name[6], "iles"))
                             return cmd::list_files;
+                        break;
+                    case 'i':
+                        if (!std::strcmp(&name[6], "ndex"))
+                            return cmd::list_index;
                         break;
                 }
                 break;
