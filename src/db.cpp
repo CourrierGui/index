@@ -8,6 +8,33 @@
 
 namespace idx {
 
+    static constexpr const char *create_db_command =
+R"(
+create table Files (
+    file_name varchar(255),
+    primary key (file_name)
+);
+create table FileIndex (
+    key varchar(255),
+    value varchar(255),
+    file_name varchar(255),
+    primary key (key, value, file_name)
+);
+)";
+
+    void create_db(std::string db_name)
+    {
+        if (access(db_name.c_str(), F_OK) != -1) {
+            std::cerr
+                << "warn: '" << db_name << "' already exists\n";
+            return;
+        }
+
+        SQLite::Database db{db_name, SQLite::OPEN_CREATE | SQLite::OPEN_READWRITE};
+
+        db.exec(create_db_command);
+    }
+
     index::index(std::string dbname) :
         db_{dbname.c_str(), SQLite::OPEN_READWRITE}
     {
@@ -55,7 +82,7 @@ namespace idx {
     }
 
     void index::insert(std::string filename,
-                       const std::initializer_list<attribute>& attributes)
+                       const std::vector<attribute>& attributes)
     {
         std::stringstream ss;
 
@@ -75,7 +102,7 @@ namespace idx {
         }
     }
 
-    auto index::find(const std::initializer_list<attribute>& attributes)
+    auto index::find(const std::vector<attribute>& attributes)
         -> std::vector<std::string>
     {
         std::map<std::string, size_t> values_found;
@@ -146,7 +173,8 @@ namespace idx {
         return res;
     }
 
-    void index::remove_attributes(const std::string& filename, const std::string& key)
+    // TODO remove several attributes
+    void index::remove_attribute(const std::string& filename, const std::string& key)
     {
         std::stringstream ss;
 

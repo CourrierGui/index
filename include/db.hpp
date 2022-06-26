@@ -11,6 +11,8 @@ namespace idx {
         std::string value;
     };
 
+    void create_db(std::string db_name);
+
     // FIXME remove useless string copy
     class index {
         public:
@@ -20,9 +22,9 @@ namespace idx {
 
             void insert(std::string filename);
             void insert(std::string filename,
-                        const std::initializer_list<attribute>& attributes);
+                        const std::vector<attribute>& attributes);
 
-            auto find(const std::initializer_list<attribute>& attributes)
+            auto find(const std::vector<attribute>& attributes)
                 -> std::vector<std::string>;
 
             void update(const std::string& filename, const attribute& attr);
@@ -32,7 +34,7 @@ namespace idx {
             auto list_attributes(const std::string& filename)
                 -> std::vector<attribute>;
 
-            void remove_attributes(const std::string& filename, const std::string& key);
+            void remove_attribute(const std::string& filename, const std::string& key);
 
         private:
             SQLite::Database db_;

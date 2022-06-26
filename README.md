@@ -8,7 +8,7 @@
 - [ ] build abstraction layer on top of SQLite
 - [ ] sanitizer
 - [ ] clang and clang format
-- [ ] find library to read data from PDF
+- [ ] find library to read data from PDF, music files, ...
 - [ ] review NLP stuff
 
 ## Examples

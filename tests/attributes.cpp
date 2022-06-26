@@ -10,20 +10,7 @@ using namespace ct::literals;
 
 auto const suite = ct::Suite{"Index", [] {
     try {
-        SQLite::Database db{"test.db", SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE};
-
-        if (db.tableExists("FileIndex")) {
-            db.exec("drop table Files");
-            db.exec("drop table FileIndex");
-        }
-        // FIXME check what happens if the length of the arguments is greater than 255
-        // FIXME set file_name length to PATH_MAX
-        db.exec("create table Files ( file_name varchar(255), primary key (file_name) )");
-        db.exec("create table FileIndex ( "
-                "key varchar(255), "
-                "value varchar(255), "
-                "file_name varchar(255), "
-                "primary key (key, value, file_name) )");
+        idx::create_db("test.db");
     } catch (std::exception& e) {
         std::cerr << e.what() << '\n';
         ct::expect(false);
@@ -95,6 +82,7 @@ auto const suite = ct::Suite{"Index", [] {
                 ct::expect(res.size() == 1_i);
                 ct::expect(res.front() == "test.txt"_sv);
             }
+            idx.remove("test.txt");
 
         } catch (const std::exception& e) {
             std::cerr << e.what() << '\n';
@@ -196,7 +184,7 @@ auto const suite = ct::Suite{"Index", [] {
                 ct::expect(res.size() == 4_i);
             }
 
-            idx.remove("test.txt");
+            idx.remove("test1.txt");
             idx.remove("test2.txt");
             idx.remove("test3.txt");
             idx.remove("test4.txt");
@@ -271,6 +259,7 @@ auto const suite = ct::Suite{"Index", [] {
             ct::expect(attrs[3].key == "k4");
             ct::expect(attrs[3].value == "v4");
         }
+        idx.remove("test.txt");
         {
             auto attrs = idx.list_attributes("not found");
             ct::expect(attrs.size() == 0_i);
@@ -288,18 +277,19 @@ auto const suite = ct::Suite{"Index", [] {
                 ct::expect(res.front() == "test.txt"_sv);
             }
 
-            idx.remove_attributes("test.txt", "not found");
+            idx.remove_attribute("test.txt", "not found");
             {
                 auto res = idx.find({ { "key", "value" } });
                 ct::expect(res.size() == 1_i);
                 ct::expect(res.front() == "test.txt"_sv);
             }
 
-            idx.remove_attributes("test.txt", "key");
+            idx.remove_attribute("test.txt", "key");
             {
                 auto res = idx.find({ { "key", "value" } });
                 ct::expect(res.size() == 0_i);
             }
+            idx.remove("test.txt");
         } catch (const std::exception& e) {
             std::cerr << e.what() << '\n';
             ct::expect(false);
