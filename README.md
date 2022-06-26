@@ -1,7 +1,9 @@
 # Index
 
-- `/usr/share/index/schema.sql`: path where the default schema is installed
-- `/var/lib/index/<index name>.db`: path where the database for each index is stored
+WORK IN PROGRESS
+
+- `~/.local/share/index/<dbname>.db`: path where the database for each index is stored
+- `~/.config/index/current_db`: database used by default (modified by `index select`)
 
 ## TODO
 

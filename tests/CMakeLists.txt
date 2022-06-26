@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 file(GLOB
     unit_tests
     attributes.cpp

@@ -1,5 +1,7 @@
 #include <dirent.h>
 
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <db.hpp>
 #include <cli.hpp>
 

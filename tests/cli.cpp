@@ -1,5 +1,7 @@
 #include <clean-test/clean-test.h>
 
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <cli.hpp>
 
 namespace ct = clean_test;

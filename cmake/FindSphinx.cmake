@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 find_program(SPHINX_BUILD 
     NAMES sphinx-build
     DOC "Path to sphinx-build executable"

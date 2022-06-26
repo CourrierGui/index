@@ -1,4 +1,5 @@
 #!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 project_root=$1
 db_path="$HOME/.local/share/index"
