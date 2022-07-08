@@ -17,6 +17,15 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+Usefull Links
+=============
+
+* `SQLite 3 Documentation <https://www3.sqlite.org/docs.html>`_
+* `SQLiteCpp <https://srombauts.github.io/SQLiteCpp/>`_
+* `Clean Tests <https://github.com/clean-test/clean-test>`_
+* `Boost Program Option <https://www.boost.org/doc/libs/1_79_0/doc/html/program_options/tutorial.html>`_
+
 Docs
 ====
 

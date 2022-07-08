@@ -9,6 +9,7 @@ namespace idx {
         set_attr,
         get_attr,
         del_attr,
+        find,
         list_files,
         create_db,
         select_db,

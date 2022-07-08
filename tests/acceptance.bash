@@ -46,6 +46,11 @@ index get-attr "$file" | grep "$(realpath "$file"): k2, v2" ||
 index get-attr "$file" | grep "$(realpath "$file"): k3, v3" ||
     error "Attributes '(k3, v3)' not found in '$file'"
 
+index find k1=v1 | grep "$(realpath "$file")" ||
+    error "Failed to retrieve '$file'"
+index find k1=v1,k2 | grep "$(realpath "$file")" ||
+    error "Failed to retrieve '$file'"
+
 index del-attr "$file" k1
 index get-attr "$file" | grep "$(realpath "$file"): k1, v1" &&
     error "Attributes '(k1, v1)' found in '$file' but should have been deleted"

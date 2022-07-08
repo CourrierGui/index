@@ -18,6 +18,10 @@ namespace idx {
                 if (!std::strcmp(&name[1], "el-attr"))
                     return cmd::del_attr;
                 break;
+            case 'f':
+                if (!std::strcmp(&name[1], "ind"))
+                    return cmd::find;
+                break;
             case 'g':
                 if (!std::strcmp(&name[1], "et-attr"))
                     return cmd::get_attr;

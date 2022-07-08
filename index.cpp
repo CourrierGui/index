@@ -50,6 +50,8 @@ void usage(const char *progname)
         << "                list the attributes of <f1>, <f2>, ...\n"
         << "    del-attr:   <f1> <k1> <k2> ...\n"
         << "                delete the attributes <k1>, <k2>, ... from <file>\n"
+        << "    find:       k1=v1,k2\n"
+        << "                list all the files matching the given attributes\n"
         << "    list-files: <index>\n"
         << "                list the files contained in <index>\n"
         << "    list-index:\n"
@@ -228,6 +230,48 @@ void list_index()
     }
 }
 
+size_t next_key_value(const std::string& input, size_t pos, idx::attribute& attr)
+{
+    auto equal = input.find_first_of('=', pos);
+    auto coma = input.find_first_of(',', pos);
+
+    if (equal < coma) {
+        attr.key = input.substr(pos, equal - pos);
+        attr.value = input.substr(equal + 1, coma - equal - 1);
+    } else {
+        attr.key = input.substr(pos, coma - pos);
+        attr.value = "";
+    }
+
+    if (coma == std::string::npos)
+        return std::string::npos;
+    else
+        return coma + 1;
+}
+
+auto get_attributes(const std::string& input)
+    -> std::vector<idx::attribute>
+{
+    std::vector<idx::attribute> res;
+    idx::attribute attr;
+    size_t pos = 0;
+
+    while ((pos = next_key_value(input, pos, attr)) != std::string::npos)
+        res.push_back(attr);
+
+    return res;
+}
+
+void find_files(const char *input)
+{
+    idx::index idx(build_full_db_name());
+
+    auto res = idx.find(get_attributes(input));
+
+    for (const auto& f: res)
+        std::cout << f << '\n';
+}
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -261,6 +305,10 @@ int main(int argc, char **argv)
                 break;
             case idx::cmd::list_index:
                 list_index();
+                break;
+            case idx::cmd::find:
+                if (argc >= 3)
+                    find_files(argv[2]);
                 break;
             case idx::cmd::help:
                 usage(argv[0]);
