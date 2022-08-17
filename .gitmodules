@@ -1,0 +1,3 @@
+[submodule "externs/clean-test"]
+	path = externs/clean-test
+	url = https://github.com/clean-test/clean-test
